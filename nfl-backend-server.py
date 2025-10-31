@@ -1,13 +1,16 @@
-# NFL Backend Server with full 32-team fallback data
-import os
+# nfl-backend-server.py
+
+import logging
 import threading
 import time
-import logging
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.INFO)
+CORS(app)
+
 logger = logging.getLogger("nfl-backend")
+logging.basicConfig(level=logging.INFO)
 
 # Simple in-memory cache for roster data
 roster_cache = {
@@ -15,7 +18,6 @@ roster_cache = {
     'last_updated': None,
     'loading': False,
 }
-
 
 def get_fallback_data():
     """Fallback roster data for all 32 NFL teams (QB, RB, WR, TE)."""
@@ -67,7 +69,6 @@ def load_rosters_background():
     finally:
         roster_cache['loading'] = False
 
-
 # Kick off background load once at startup
 threading.Thread(target=load_rosters_background, daemon=True).start()
 
@@ -87,4 +88,4 @@ def get_teams():
         {'abbr': 'ARI', 'name': 'Arizona Cardinals'},
         {'abbr': 'ATL', 'name': 'Atlanta Falcons'},
         {'abbr': 'BAL', 'name': 'Baltimore Ravens'},
-        {'abbr': 'BUF', 'name
+        {'abbr': 'BUF
